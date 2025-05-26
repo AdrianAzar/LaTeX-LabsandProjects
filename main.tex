@@ -1,0 +1,719 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{amsmath}
+\usepackage{amsthm,amsfonts}
+\usepackage{hyperref}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{problem}{Problem}
+\newtheorem*{solution}{Solution}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{graphicx}
+\usepackage{caption}
+\title{M2272 Project}
+\author{Adrian Azar}
+\date{April 2025}
+\lstset{
+  backgroundcolor=\color{white},    % Background color
+  basicstyle=\ttfamily\small,            % Code font style
+  keywordstyle=\color{blue},             % Keyword color
+  commentstyle=\color{green},            % Comment color
+  stringstyle=\color{red},               % String color
+  numbers=left,                          % Line numbers on the left
+  numberstyle=\tiny\color{gray},         % Line number style
+  stepnumber=1,                          % Line numbers every 1 line
+  numbersep=5pt,                         % Distance from line numbers to code
+  showstringspaces=false,                % Don't underline spaces in strings
+  breaklines=true,                       % Break long lines
+  frame=single,                          % Add a frame around the code
+}
+\begin{document}
+
+\maketitle
+
+\newpage
+\tableofcontents
+
+\newpage
+
+\section{Roots of f(x)}
+In this chapter I am going to be solving the equation $f(x)=0$ in order to find the \textbf{roots} with the help of \text{root finding} numerical methods.
+\subsection{Bisection Method}
+This is the most basic numerical method that is based on the \textbf{Intermediate Value Theorem}.
+\begin{theorem}[Intermediate Value Theorem]
+Let \( f : [a, b] \to \mathbb{R} \) be a continuous function. If \( f(a) \neq f(b) \), and \( k \) is a real number such that
+\[
+f(a) < k < f(b) \quad \text{or} \quad f(b) < k < f(a),
+\]
+then \( \exists c \in (a, b) \) such that
+\[
+f(c) = k.
+\]
+In particular, if \( f(a) \cdot f(b) < 0 \), then \( \exists c \in (a, b) \) such that
+\[
+f(c) = 0.
+\]
+\end{theorem}
+The \textbf{Bisection Method} is one of the, if not, the best numerical method the relies on the bisecting the interval \([a,b]\) until it is small enough where \(a\) and \(b\)  coincide with a root of \(f(x)\) , with some error because \(a\)  and \(b\)  may only be approximately equal to the root.
+\subsubsection{Mathematical Approach}
+
+\begin{theorem}
+Let \( f \) be a function. We say that \( f \) is \textit{strictly monotonic} on an interval \( ]a, b[ \) if for all \( x_1, x_2 \in ]a, b[ \), \( x_1 < x_2 \) implies that \( f(x_1) < f(x_2) \) (strictly increasing) or \( f(x_1) > f(x_2) \) (strictly decreasing).
+
+\end{theorem}
+Until the end of this method, \(f\) will always be monotone on \([a,b]\).
+
+\begin{enumerate}
+\item Let  \(c= \frac{a + b} {2} \)
+\item If  $f(a) \cdot f(b) < 0$  $\Rightarrow$ \(b=c\), else \(a=c\)
+\item If \( \left| b - a \right| \leq \epsilon \), then we \(\implies \text{stop}\).
+Note that \(\epsilon=10^{-6}.\), where $|b-a|$ is the error and $\epsilon$ is the \textbf{maximum error}.
+\end{enumerate}
+You will of course have to loop this process.
+\subsubsection{Code}
+Here is the \textbf{Python} code for the Bisection Method:
+
+\begin{lstlisting}[language=Python]
+import math as m
+
+def f(x):
+    f =  #enter a mathematical fucntion
+    return f  
+
+# Bisection method
+a = float(input('First initial guess a='))  
+b = float(input('Second initial guess b='))  
+eps = float(input('What is the error? '))  
+error = float(eps) + 1  
+nmax = int(input('The max number of iterations is= '))  
+n = 1  
+
+while (n < nmax) and (error > eps):
+    c = (a + b) / 2  
+    if f(a) * f(c) <= 0:  
+        b = c  
+    else:  
+        a = c  
+    error = m.fabs(b - a)  
+    n = n + 1  
+
+print(f'The solution is {a} at an error of {error}')
+print(f'The number of iterations is {n}')
+\end{lstlisting}
+Here is the \textbf{MATLAB} code for the Bisection Method: (assuming fucntion already defined)
+\begin{lstlisting}[language=MATLAB]
+clear
+clc
+a=input('a= ');
+b=input('b= ');
+eps=input('eps= ');
+N=input('N= ');
+n=1;
+error=eps+1;
+while(n<N)&&(error>eps)
+    c=(a+b)/2;
+    if(f(a)*f(c)<=0)
+        b=c;
+    else
+        a=c;
+    end
+    error=abs(a-b);
+    n=n+1;
+end
+fprintf('The solution is %f near %f \n',a,error);
+fprintf('The number of iterations is %g',n)
+\end{lstlisting}
+
+
+
+
+\subsection{Newton-Raphson Method}
+  \subsubsection{Mathematical Approach}
+  \begin{theorem}\textbf{}
+    \[
+f(x) = 0
+\]
+
+The idea behind the Newton-Raphson method is to approximate the function near a guess \( x_0 \) using a linear approximation. To do this, we use the first-order Taylor expansion of the function \( f(x) \) around \( x_0 \):
+
+\[
+f(x) \approx f(x_0) + f'(x_0)(x - x_0)
+\]
+
+We want to find the value of \( x \) where \( f(x) = 0 \). So, we set the above approximation equal to zero:
+
+\[
+0 = f(x_0) + f'(x_0)(x - x_0)
+\]
+
+Solving for \( x \), we get:
+
+\[
+x = x_0 - \frac{f(x_0)}{f'(x_0)}
+\]
+
+Thus, the Newton-Raphson iteration formula is:
+
+\[
+\boxed{x_{n+1} = x_n - \frac{f(x_n)}{f'(x_n)}}
+\]
+
+
+\end{theorem}
+
+Unlike the Bisection method, the Newton-Raphson method has one major \textbf{problem}, the \textbf{convergence} of the \textbf{initial choice \textbf{$x_0$}}.
+\subsubsection{Conditions}
+The choice of the \textbf{initial condition} depends on the following:
+\begin{enumerate}
+    
+        \item The relation of the concavity \(f''(x_0)\)  with \(f(x_0)\), \(f''(x_0)\).\(f(x_0)\) \textless 0, for the method to actually converge to the solution and not diverge.
+        \item  The \textbf{Absolute Relative Error}, \(\epsilon \), must be less than or equal to \(10^{-6}\):
+        \begin{equation}
+            \epsilon= |\frac{x_{i+1} -x_{i}}{x_{i+1}}| \leq 10^{-6}
+        \end{equation}
+        \item When the first derivative \(f'(x_n)=0\) in the denominator of the Newton-Raphson formula occurs, we obviously can continue finding a solution.
+        \item  Root jumping when a function like trigonometric functions that have many roots.
+        
+   
+\end{enumerate}
+\subsubsection{Code}
+Here is the \textbf{Python} code for the Newton-Raphson method:
+\begin{lstlisting}[language=Python]
+import math as m
+def f(x):
+    
+    f= #choose a suitable function
+    return f
+def df(x):
+    f=3*m.pow(x,2)-2
+    return f
+
+def d2f(x):
+    f=6*x
+    return f
+
+a=float(input('a= '))
+eps=float(input('eps= '))
+error=eps+1
+nmax=int(input('Max iterations= '))
+if f(a)*d2f(a)<0:
+    print(f'{a} is not a good initialization')
+elif f(a)*d2f(a)==0:
+    print('Unknown')
+elif f(a)*d2f(a)>0:
+    n=1
+    while (error>eps) and (nmax>n):
+        x=a-f(a)/df(a)
+        error=m.fabs((x-a)/x)
+        a=x
+        n=n+1
+    print(f'{a} is the root with {n} iterations and an error of {error}')
+\end{lstlisting}
+Here is the \textbf{MATLAB} codes for the Newton-Raphson Method:(assuming function and its derivative is defined)
+\begin{lstlisting}[language=MATLAB]
+clear
+clc
+x=input('x= ');
+eps=input('eps= ');
+N=input('N= ');
+n=1;
+error=eps+1;
+while(n<N)&&(error>eps)
+    y=x-f(x)/df(x);
+    error=abs((y-x)/y);
+    x=y;
+    n=n+1;
+end
+fprintf('The solution is %f with an error of %f and %g iterations',y,error,n)
+\end{lstlisting}
+
+\subsection{Secant Method}
+\subsubsection{Mathematical Interpretation}
+\begin{theorem}
+    
+
+Newton - Raphson method is given by:
+
+\[
+x_{n+1} = x_n - \frac{f(x_n)}{f'(x_n)}
+\]
+
+However, the Secant Method approximates the derivative so
+
+\[
+f'(x_n) \approx \frac{f(x_n) - f(x_{n-1})}{x_n - x_{n-1}}
+\]
+
+Substitute this approximation into Newton's formula:
+
+\[
+x_{n+1} = x_n - \frac{f(x_n)}{\displaystyle \frac{f(x_n) - f(x_{n-1})}{x_n - x_{n-1}}}
+\]
+
+Simplify the expression:
+
+\[
+\boxed{x_{n+1} = x_n - f(x_n) \cdot \frac{x_n - x_{n-1}}{f(x_n) - f(x_{n-1})}}
+\]
+This is the Secant Method equation
+\end{theorem}
+\subsubsection{Conditions}
+The conditions for the  Secant Method include:
+\begin{enumerate}
+    \item The denominator \(f(x_n) - f(x_{n-1})\) must \textbf{NOT} be zero at 2 points \(x_n\) and \(x_{n-1}\).
+    \item After several interations, the \textbf{Absolute Relative Error}, \(\epsilon \), must be less than or equal to \(10^{-6}\):
+        \begin{equation}
+            \epsilon= |\frac{x_{i+1} -x_{i}}{x_{i+1}}| \leq 10^{-6}
+            \end{equation}
+    \item Root jumping  just like in the Newton-Raphson method.
+\end{enumerate}
+\subsubsection{Code}
+Here is the \textbf{Python} code
+\begin{lstlisting}[language=Python]
+    import math as m
+def f(x):
+    E=m.e
+    f=    #choose a suitable function
+    return f
+
+x0=float(input('x0= '))
+x1=float(input('x1= '))
+eps=float(input('eps= '))
+error=eps+1
+nmax=int(input('Max iterations= '))
+n=1
+while (error>eps) and (nmax>n):
+        x2=x1-(f(x1)*(x1-x0))/(f(x1)-f(x0))
+        error=m.fabs((x2-x1)/x2)
+        x0=x1
+        x1=x2
+        n=n+1
+    
+print(f'{x0} is the root with {n} iterations and an error of {error}')
+\end{lstlisting}
+Here is the \textbf{MATLAB} code:(assuming function and the derivative is already defined)
+\begin{lstlisting}[language=MATLAB]
+clear
+clc
+x0=input('x0= ');
+x1=input('x1= ')
+eps=input('eps= ');
+N=input('N= ');
+n=1;
+error=eps+1;
+while(n<N)&&(error>eps)
+    x2=x1-(f(x1)*(x1-x0))/(f(x1)-f(x0));
+    x0=x1;
+    x1=x2;
+    error=abs((x2-x1)/x2)
+    n=n+1;
+end
+fprintf('The solution is %f with an error of %f and %g iterations',x2,error,n)
+\end{lstlisting}
+\subsection{Fixed Point Method}
+We want to solve
+\[
+f(x)=0
+\]
+by iterative approximation.
+
+\bigskip
+
+Starting from an initial guess \( x_0 \), we compute successive values:
+
+\begin{align*}
+x_1 &= f(x_0) \\
+x_2 &= f(x_1) \\
+x_3 &= f(x_2) \\
+&\;\;\vdots \\
+x_{i+1} &= f(x_i) \\
+&\;\;\vdots \\
+x_{n+1} &= f(x_n)=g(x_n)
+\end{align*}
+
+\bigskip
+
+\noindent
+
+
+\bigskip
+
+\noindent
+\textbf{General Formula:}
+\[
+\boxed{x_{k+1} = g(x_k)}
+\quad \text{for } k = 0, 1, 2, \dots, n
+\]
+\subsubsection{Conditions}
+
+     \begin{theorem} 
+     Convergence Theorem: Let \(g:[a, b] \to \mathbb{R}\) where \(g(x)\) is convergent if it satisfies the following:
+     \begin{enumerate}
+        \item 
+        \textbf{Contraction Hypothesis}: \newline
+              g contractant and defined in \([a,b]\) \newline
+             \(\forall(x_1,x_2) \in[a,b], \exists K<1,\)
+              
+            $$ \left |\frac{g(x_1)-g(x_2)}{x_1-x_2} \right | \leq K $$ $$\text{or }$$
+            $$  \boxed{g'(x)<1} $$
+            
+        \item \textbf{Inclusion Hypothesis}:\newline
+         \(g\subset[a,b]\)
+         $$\Rightarrow \forall x\in[a,b],g(x)\in[a,b]$$
+         $$\Rightarrow \boxed{g([a,b])\subset[a,b]}$$
+    
+    \end{enumerate}
+             \end{theorem}
+If both of these are proven, then the chosen initial $x_0$ will converge to a solution.
+\subsection{Code}
+The \textbf{Python} code is: 
+\begin{lstlisting}[language=Python]
+import math as m
+def g(x):
+    g= #define a suitable function 
+    return g  
+# fixed point method
+x0=float(input('initial guess x0='))
+eps=float(input('What is the error? '))
+error= float(eps) + 1
+nmax=int(input('The max number of iterations is= '))
+n=1
+while (n<nmax) and (error>eps):
+    x1=g(x0)
+    error=m.fabs(x1-x0)
+    x0=x1
+    n=n+1
+
+print(f'The solution is {x0} at an error of {error}')
+print(f'The number of iterations is {n}') 
+\end{lstlisting}
+The \textbf{MATLAB} code is:(assuming function is defined)
+\begin{lstlisting}[language=MATLAB]
+    clear
+clc
+x0=input('x0= ');
+eps=input('eps= ');
+error=eps+1;
+N=input('N= ');
+n=1;
+while(error>eps)&&(N>n)
+    x1=g(x0);
+    error=abs((x1-x0)/x1);
+    x0=x1;
+    n=n+1;
+end
+fprintf('The solution is %f near %f with %g iterations',x1,error,n)
+\end{lstlisting}
+     
+        
+  \section{Differential Equations}
+  \subsection{Analytical Solution}
+  In this chapter, we will \textbf{ONLY} solve  first order differential equations(first order \textbf{ODE}) with initial conditions: $$\frac{dy}{dx}=f(x,y(x))$$ with $y(0)=y_0$. \newline
+  In order to solve this type of \textbf{ODE} we need to verify the following conditions of the \textbf{Cauchy Problem}(or of initial values):
+  \begin{enumerate}
+      \item The function must be defined and continuos $\forall(x,y)$
+      \item The function must be \textbf{Lipschitizian}
+      \begin{lemma}
+          \textbf{Lipschitizian}\newline
+          $\forall(y_1,y_2)\in \mathbb{R}$, $\exists L\ge0/$ $|f(x,y_2)-f(x,y_1) |\le L|y_2-y_1|$
+      \end{lemma}
+  \end{enumerate}
+\subsection{Numerical Solutions}
+Now, we shall solve ODEs using different numerical methods. We use numerical methods \textbf{ESPECIALLY} when the equation we are solving is non-linear and/or unsolvable via analytical methods.Numerically, we use \textit{discrete} functions based on $x_i$ values where:
+\begin{align*}
+x_0 &= a \\
+x_1 &= a+h \\
+x_2 &= a+2h \\
+&\;\;\vdots \\
+x_{i} &= a=ih \\
+&\;\;\vdots \\
+x_{N} &= a+Nh=b \Rightarrow h=\frac{b-a}{N}
+\end{align*}
+\subsubsection{Euler's Method}
+\begin{theorem}
+    The Euler Method of $1$ step(explicit) is derived from the following $1^{st}$ order taylor expansion: $$y(x_{n+1})=y(x_n+h)=y(x_n)+\frac{h}{1!}y'(x_n)$$
+    $$\text{OR}$$ $$\boxed{y(x_{n+1})=y(x_n)+hf(x_n,y_n)}$$
+    Note that the 2 step(Implicit) Euler method is: $$y(x_{n+1})=y(x_n+h)=y(x_n)+\frac{h}{1!}y'(x_n)+\frac{h^2}{2!}f(x_n,y_n)$$
+\end{theorem}
+We shall not concern ourselves with the Implicit method \newline
+Here is the \textbf{Python} code for Euler method of 1 step:
+\begin{lstlisting}[language=Python]
+import numpy as np
+import matplotlib.pyplot as plt
+def f(x,y):
+    return x*y #or any other function
+a=1
+b=2
+N=50
+h=(b-a)/N
+x=np.zeros(N)
+y=np.zeros(N)
+y[0]=1 #pick any intial condition
+x[0]=a #xo 
+for i in range(N-1):
+    y[i+1]= y[i]+h*f(x[i],y[i])
+    x[i+1]= x[0]+i*h
+
+plt.plot(x,y)
+plt.show()
+\end{lstlisting}
+The \textbf{MATLAB} code is:
+\begin{lstlisting}[language=MATLAB]
+clear
+clc
+a=input('a= ');
+b=input('b= ');
+N=input('max= ');
+h=(b-a)/N;
+x(1)=a;
+y(1)=1;
+for i=1:N-1
+    y(i+1)=y(i)+h*fct(x(i),y(i));
+    x(i+1)=a+i*h;
+end
+plot(x,y)
+    
+\end{lstlisting}
+\subsubsection{Runge Kutta 2a}
+The Runge Kutta 2a or RK-2a method is derived from the \textbf{Midpoint} integration method:
+\begin{theorem}
+  Let $k_1=hf(x_n,y_n)$ and $k_2=hf(x_n+0.5h,y_n+0.5k_1)$.\newline
+  The RK-2a formula is: $$\boxed{y_{n+1}=y_n+k_2}$$
+\end{theorem}
+The \textbf{Python} code of RK-2a is:
+\begin{lstlisting}[language=Python]
+import numpy as np
+import matplotlib.pyplot as plt
+def f(x,y):
+    return 10*x*y
+
+
+a=float(input('a= '))
+b=float(input('b= '))
+N=int(input('max= '))
+h=(b-a)/N
+x=np.zeros(N)
+y=np.zeros(N)
+y[0]=1
+x[0]=a
+for i in range(N-1):
+    k1=h*f(x[i],y[i])
+    k2=h*f(x[i]+0.5*h,y[i]+0.5*k1)
+    y[i+1]=y[i]+k2
+    x[i+1]=a+i*h
+
+
+plt.plot(x,y)
+plt.show()
+\end{lstlisting}
+The \textbf{MATLAB} code is:(assume function is defined)
+\begin{lstlisting}[language=MATLAB]
+clear
+clc
+a=input('a= ');
+b=input('b= ');
+N=input('max= ');
+h=(b-a)/N;
+x(1)=a;
+y(1)=1;
+for i=1:N-1
+    k1=h*fct(x(i),y(i));
+    k2=h*fct(x(i)+0.5*h,y(i)+0.5*k1);
+    y(i+1)=y(i)+k2;
+    x(i+1)=a+i*h;
+end
+plot(x,y)
+\end{lstlisting}
+\subsubsection{Runge Kutta 2b}
+The Runge Kutta 2b or RK-2b for short is:
+\begin{theorem}
+   Let $k_1=hf(x_n,y_n)$ and $k_2=hf(x_n+h,y_n+k_1)$.\newline
+   The RK-2b formula is: 
+ $$\boxed{y_{n+1}=y_n+0.5(k_2+k_1)}$$
+\end{theorem}
+The \textbf{Python} code is:
+\begin{lstlisting}[language=Python]
+import numpy as np
+import matplotlib.pyplot as plt
+def f(x,y):
+    return x*y
+
+
+a=float(input('a= '))
+b=float(input('b= '))
+N=int(input('max= '))
+h=(b-a)/N
+x=np.zeros(N+1)
+y=np.zeros(N+1)
+y[0]=1
+x[0]=a
+for i in range(N):
+    k1=h*f(x[i],y[i])
+    k2=h*f(x[i]+h,y[i]+k1)
+    y[i+1]=y[i]+0.5*(k2+k1)
+    x[i+1]=x[0]+i*h
+
+plt.plot(x,y)
+plt.show()  
+\end{lstlisting}
+The \textbf{MATLAB} code is:(assuming function is defined)
+\begin{lstlisting}[language=MATLAB]
+clear
+clc
+a=input('a= ');
+b=input('b= ');
+N=input('max= ');
+h=(b-a)/N;
+x(1)=a;
+y(1)=1;
+for i=1:N-1
+    k1=h*fct(x(i),y(i));
+    k2=h*fct(x(i)+h,y(i)+k1);
+    y(i+1)=y(i)+0.5*(k1+k2);
+    x(i+1)=a+i*h;
+end
+plot(x,y)
+    
+\end{lstlisting}
+
+\subsubsection{Runge Kutta 4}
+The Runge Kutta 4 or RK-4 method is:
+\begin{theorem}
+    Let $k_1=hf(x_n,y_n)$,$k_2=hf(x_n+0.5h,y_n+0.5k_1)$,\newline $k_3=hf(x_n+0.5h,y_n+0.5k_2)$, and $k_4=hf(x_n+h,y_n+k_3)$.
+    $$\boxed{y_{n+1}=y_n+(k_1+2(k_2+k_3)+k_4)/6}$$
+\end{theorem}
+The \textbf{MATLAB} code is:(assuming you defined a function)
+\begin{lstlisting}[language=MATLAB]
+clear
+clc
+a=input('a= ');
+b=input('b= ');
+N=input('max= ');
+h=(b-a)/N;
+x(1)=a;
+y(1)=1;
+for i=1:N-1
+    k1=h*fct(x(i),y(i));
+    k2=h*fct(x(i)+0.5*h,y(i)+0.5*k1);
+    k3=h*fct(x(i)+0.5*h,y(i)+0.5*k2);
+    k4=h*fct(x(i)+h,y(i)+k3);
+    y(i+1)=y(i)+(k1+2*(k2+k3)+k4)/6;
+    x(i+1)=a+i*h;
+end
+plot(x,y) 
+\end{lstlisting}
+The \textbf{Python} code is:
+\begin{lstlisting}[language=Python]
+    import numpy as np
+import matplotlib.pyplot as plt
+def f(x,y):
+    return x*y
+
+
+a=float(input('a= '))
+b=float(input('b= '))
+N=int(input('max= '))
+h=(b-a)/N
+x=np.zeros(N+1)
+y=np.zeros(N+1)
+y[0]=1
+x[0]=a
+for i in range(N):
+    k1=h*f(x[i],y[i])
+    k2=h*f(x[i]+0.5*h,y[i]+0.5*k1)
+    k3=h*f(x[i]+0.5*h,y[i]+0.5*k2)
+    k4=h*f(x[i]+h,y[i]+k3)
+    y[i+1]=y[i]+1/6*(k1+2*(k2+k3)+k4)
+    x[i+1]=x[0]+i*h
+
+plt.plot(x,y)
+plt.show()   
+\end{lstlisting}
+\section{Problems}
+\begin{problem}
+A ball is launched vertically upward with an initial velocity $v_0=50m/s$.The motion is influenced by gravity and linear air resistance. The governing equation for the velocity after applying Newton's Second Law is: $$m\frac{dv}{dt}=-mg-kv$$
+where:\newline
+$m=1kg \newline
+k=0.1kg/s$ (coefficienct of air resistance)\newline
+$g=9.81m/s^2$
+1) Find the plot of $v(t)$ by solving the ODE while using the RK4 method \newline
+2) Find the general solution(symbolic) of the ODE\newline
+3)After finding the symbolic solution, find the time $t$ in which $v(t)=0$
+
+
+\end{problem}
+\begin{solution}
+1) Rewrite the the ODE in the form $\frac{dv}{dt}=f(v,t)$: $$\frac{dv}{dt}=-g-\frac{kv}{m}$$\newline
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=1\textwidth]{myplot1.png}
+  \caption{Plot generated from MATLAB.}
+  \label{fig:matlabplot}
+\end{figure}
+
+
+2) 
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=1.5\textwidth]{Screenshot_1.png}
+  \caption{Plot generated from Jupyter Notebook.}
+  \label{fig:matlabplot}
+\end{figure}
+
+In terms of v and t: $$v(t)=C_1e^{-\frac{kt}{m}}-\frac{mg}{k}$$
+Knowing at v(0)=50: 
+$$\boxed{v(t)=(50+\frac{mg}{k})e^{-\frac{kt}{m}}-\frac{mg}{k}}$$
+3)To find the roots of $v(t)$, we can use the bisection method:
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=1\textwidth]{Screenshot_2.png}
+  \caption{Plot generated from MATLAB.}
+  \label{fig:matlabplot}
+\end{figure}
+This function only has one root which is $t=4.119003$(check it by plotting)
+\end{solution}
+
+\begin{problem}
+    Assume the \textbf{Temperature as a function of time} of an extraterrestial object during the day varies according to the following equation: $$T(t)= T_{surr}+(T(0)-T_{surr})e^{-kt}+5sin(0.1t)$$
+    Where: \newline
+    $T_{surr}=20^\circ\mathrm{C}$ is the average surrounding temperature \newline 
+    Time in min \newline
+    $k=0.01/min$ \newline
+    $T(0)=13^\circ\mathrm{C}$ \newline
+    1) Find at which time \textbf{t} where the temperature is equal to the \textbf{surrounding} temperature between $t\in[40,60]$. \newline
+    By DERIVING both sides of the equation wrt to time, we get the following non-linear ODE:
+    $$\frac{dT}{dt}=-k(T(0)-T_{surr})e^{-kt}+0.5cos(0.1t)$$
+    2) Plot the solution to the following differential equation by using the euler method.
+    
+\end{problem}
+\begin{solution}
+    1)We have to solve the following equation: 
+    $$T(t)= T_{surr}+(T(0)-T_{surr})e^{-kt}+5sin(0.1t)=13$$ 
+    Shifting so that we get an equation equals to zero: 
+    $$T(t)= T_{surr}+(T(0)-T_{surr})e^{-kt}+5sin(0.1t)-13=0$$
+    By using the Newton-Raphson method(fig 4)\newline
+    
+    2)We want to solve this very simple ODE numerically(fig 5):
+    \begin{figure}[h]
+  \centering
+  \includegraphics[width=1\textwidth]{Screenshot_4.png}
+  \caption{Solving temperature equation}
+  \label{fig:matlabplot}
+\end{figure}
+    
+    \begin{figure}[h]
+  \centering
+  \includegraphics[width=1\textwidth]{Screenshot_3.png}
+  \caption{Euler Method}
+  \label{fig:matlabplot}
+\end{figure}
+
+    
+\end{solution}
+
+
+\end{document}
